@@ -1,8 +1,10 @@
+var dailyActivitySummaryUrl = fbDailyActivitySummaryJSONURL+moment().format('YYYY-MM-DD')+".json";
 (function() {
 	var indexApp = angular.module('indexApp', []);
 	indexApp.value('accessTokenValue','');
 
 	indexApp.controller('accessToken', ['accessTokenValue', function(accessTokenValue) {
+		setUpUI();
 		var accessToken = null;
 		var returnURL = window.location.href;
 		var codeVarChar = returnURL.indexOf('code=') + 5;
@@ -28,7 +30,7 @@
 				// Process success actions
 				accessTokenValue = result.access_token;
 				dataLoadWithUrl(accessTokenValue, fbLeaderBoardJSONURL);
-				dataLoadWithUrl(accessTokenValue, fbActivityGoalJSONURL);
+				dataLoadWithUrl(accessTokenValue, dailyActivitySummaryUrl);
 			},
 			'error' : function(XMLHttpRequest, textStatus, errorThrown) {
 				// Process error actions
@@ -38,9 +40,6 @@
 								+ XMLHttpRequest.statusText);
 			}
 		});
-		return {
-			accessToken: accessTokenValue
-		};
 	}]);
 
 	indexApp.directive('navHead', function() {
@@ -64,6 +63,16 @@
 		};
 	});
 	
+	function setUpUI(){
+		$('#dailyProgressCircle').circleProgress({
+	        value: 0,
+	        size: 120,
+	        fill: {
+	            gradient: ["red", "orange"]
+	        }
+	    });
+	}
+	
 	function dataLoadWithUrl(accessTokenValue, url){
 		$.ajax({
 			'url' : url,
@@ -80,8 +89,9 @@
 				case fbLeaderBoardJSONURL:
 					loadFriendsList(resultJSON);
 					break;
-				case fbActivityGoalJSONURL:
-					
+				case dailyActivitySummaryUrl:
+					loadDailyProgress(resultJSON);
+					break;
 				}
 				
 			},
@@ -96,7 +106,7 @@
 		});
 	}
 	
-	function loadFriendsList(friendsJSON){
+	function loadFriendsList(friendsJSON) {
 		var friendsTable = $('#friendsTable').DataTable({
 			ordering: false,
 			columns: [
@@ -119,5 +129,19 @@
 			                      friendsList.friends[i].average.steps
 			                      ]).draw(false);
 		}
+	}
+	
+	function loadDailyProgress(dailyActivitySummaryJSON) {
+		alert(dailyActivitySummaryJSON);
+		var dailyGoal = JSON.parse(dailyActivitySummaryJSON);
+		var stepGoal = dailyGoal.goals.steps;
+		var steps = dailyGoal.summary.steps;
+		$('#dailyProgressCircle').circleProgress({
+	        value: steps/stepGoal,
+	        size: 120,
+	        fill: {
+	            gradient: ["red", "yellow", "green"]
+	        }
+	    });
 	}
 })();

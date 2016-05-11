@@ -3,3 +3,4 @@ var fbRedirectURL = "http://localhost:8080/StepRace/html/index.html";
 var fbAccessTokenURL = "https://api.fitbit.com/oauth2/token";
 var fbLeaderBoardJSONURL = "https://api.fitbit.com/1/user/-/friends/leaderboard.json";
 var fbActivityGoalJSONURL = "https://api.fitbit.com/1/user/-/activities/goals/daily.json";
+var fbDailyActivitySummaryJSONURL = "https://api.fitbit.com/1/user/-/activities/date/";
